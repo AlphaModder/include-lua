@@ -1,0 +1,10 @@
+[package]
+name = "lua-include-example"
+version = "0.1.0"
+authors = ["AlphaModder"]
+edition = "2018"
+publish = false
+
+[dependencies]
+include-lua = { path = "../include-lua" }
+rlua = "0.16.2"

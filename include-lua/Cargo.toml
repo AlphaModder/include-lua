@@ -1,0 +1,10 @@
+[package]
+name = "include-lua"
+version = "0.1.0"
+authors = ["AlphaModder"]
+edition = "2018"
+
+[dependencies]
+rlua = "0.16.2"
+include-lua-macro = { path = "../include-lua-macro" }
+proc-macro-hack = "0.5.4"

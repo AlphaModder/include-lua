@@ -1,0 +1,2 @@
+[workspace]
+members = ["include-lua", "include-lua-macro", "example" ]
