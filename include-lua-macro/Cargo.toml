@@ -1,6 +1,8 @@
 [package]
 name = "include-lua-macro"
 version = "0.1.0"
+repository = "https://github.com/AlphaModder/include-lua"
+license = "MIT"
 authors = ["AlphaModder"]
 edition = "2018"
 
