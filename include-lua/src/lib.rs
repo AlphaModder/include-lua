@@ -7,14 +7,14 @@ use rlua::{Result, Context, UserData, UserDataMethods, MetaMethod, Value, Table,
 pub use include_lua_macro::include_lua;
 
 pub struct LuaModules {
-    files: HashMap<String, String>,
-    name: String,
+    files: HashMap<String, (String, String)>,
+    prefix: String,
 }
 
 impl LuaModules {
     #[doc(hidden)] // This is not a public API!
-    pub fn __new(files: HashMap<String, String>, name: &str) -> LuaModules {
-        LuaModules { files: files, name: name.to_string() }
+    pub fn __new(files: HashMap<String, (String, String)>, prefix: &str) -> LuaModules {
+        LuaModules { files: files, prefix: prefix.to_string() }
     }
 }
 
@@ -24,9 +24,9 @@ impl UserData for Searcher {
      fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
         methods.add_meta_method(MetaMethod::Call, |ctx, this, value: String| {
             Ok(match this.0.files.get(&value) {
-                Some(source) => {
+                Some((source, path)) => {
                     Value::Function(ctx.load(source)
-                        .set_name(&this.0.name)?
+                        .set_name(&format!("{}/{} (virtual)", &this.0.prefix, path))?
                         .set_environment(ctx.registry_value::<Table>(&this.1)?)?
                         .into_function()?
                     )

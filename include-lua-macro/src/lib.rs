@@ -47,8 +47,11 @@ impl IncludeLua {
 
         let add_files = modules.map(|(module, path)| {
             let module = LitStr::new(&module, Span::call_site());
-            let path = LitStr::new(&PathBuf::from(self.0.value()).join(path).to_string_lossy(), Span::call_site());
-            quote! { files.insert(#module.to_string(), include_str!(#path).to_string()) }
+            let real_path = LitStr::new(&PathBuf::from(self.0.value()).join(&path).to_string_lossy(), Span::call_site());
+            let virtual_path = LitStr::new(&PathBuf::from(self.1.value()).join(&path).to_string_lossy(), Span::call_site());
+            quote! {
+                files.insert(#module.to_string(), (include_str!(#real_path).to_string(), #virtual_path.to_string()))
+            }
         });
 
         let name = &self.1;
@@ -58,7 +61,7 @@ impl IncludeLua {
             #[allow(rust_2018_idioms)]
             extern crate include_lua as _include_lua;
 
-            let mut files = ::std::collections::HashMap::<String, String>::new();
+            let mut files = ::std::collections::HashMap::<String, (String, String)>::new();
             #(#add_files;)*
             _include_lua::LuaModules::__new(files, #name)
         } }
@@ -69,7 +72,10 @@ impl Parse for IncludeLua {
     fn parse(input: ParseStream) -> Result<Self> {
         let (path_str, name) = {
             let s1: LitStr = input.parse()?;
-            (s1.clone(), if let Err(_) = input.parse::<Token![:]>() { s1 } else { input.parse()? })
+            match input.parse::<Token![:]>() {
+                Ok(_) => (input.parse()?, s1),
+                Err(_) => (s1.clone(), s1),
+            }
         };
         if !input.is_empty() { return Err(input.error("Unknown token in include_lua invocation!")) }
         Ok(IncludeLua(path_str, name))

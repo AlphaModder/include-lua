@@ -3,7 +3,7 @@ use rlua::Lua;
 
 fn main() -> rlua::Result<()> {
     let lua = Lua::new();
-    let modules = include_lua!("lib");
+    let modules = include_lua!("lib_name": "lib");
     lua.context(|ctx| -> rlua::Result<()> {
         ctx.add_modules(modules)?;
         println!("{}", ctx.load("require('alpha')").eval::<String>()?);
