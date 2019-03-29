@@ -48,7 +48,7 @@ impl IncludeLua {
         let add_files = modules.map(|(module, path)| {
             let module = LitStr::new(&module, Span::call_site());
             let real_path = LitStr::new(&PathBuf::from(self.0.value()).join(&path).to_string_lossy(), Span::call_site());
-            let virtual_path = LitStr::new(&PathBuf::from(self.1.value()).join(&path).to_string_lossy(), Span::call_site());
+            let virtual_path = LitStr::new(&path.to_string_lossy(), Span::call_site());
             quote! {
                 files.insert(#module.to_string(), (include_str!(#real_path).to_string(), #virtual_path.to_string()))
             }

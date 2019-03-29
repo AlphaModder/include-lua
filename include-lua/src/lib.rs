@@ -26,7 +26,7 @@ impl UserData for Searcher {
             Ok(match this.0.files.get(&value) {
                 Some((source, path)) => {
                     Value::Function(ctx.load(source)
-                        .set_name(&format!("{}/{} (virtual)", &this.0.prefix, path))?
+                        .set_name(&format!("{}\\{} (virtual)", &this.0.prefix, path))?
                         .set_environment(ctx.registry_value::<Table>(&this.1)?)?
                         .into_function()?
                     )
