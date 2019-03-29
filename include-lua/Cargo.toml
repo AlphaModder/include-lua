@@ -10,5 +10,5 @@ edition = "2018"
 
 [dependencies]
 rlua = "0.16.2"
-include-lua-macro = { path = "../include-lua-macro" }
+include-lua-macro = "0.1.0"
 proc-macro-hack = "0.5.4"
