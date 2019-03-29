@@ -3,12 +3,12 @@ name = "include-lua"
 description = "A crate that allows the embedding of a lua source tree into a Rust application binary."
 repository = "https://github.com/AlphaModder/include-lua"
 readme = "../README.md"
-version = "0.1.1"
+version = "0.1.2"
 license = "MIT"
 authors = ["AlphaModder"]
 edition = "2018"
 
 [dependencies]
 rlua = "0.16.2"
-include-lua-macro = "0.1.1"
+include-lua-macro = "0.1.2"
 proc-macro-hack = "0.5.4"
