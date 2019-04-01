@@ -18,7 +18,7 @@ impl LuaModules {
     }
 }
 
-struct Searcher(LuaModules, RegistryKey);
+pub struct Searcher(LuaModules, RegistryKey);
 
 impl UserData for Searcher {
      fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -40,6 +40,8 @@ impl UserData for Searcher {
 pub trait ContextExt<'a> {
     fn add_modules(&self, modules: LuaModules) -> Result<()>;
     fn add_modules_with_env(&self, modules: LuaModules, environment: Table<'a>) -> Result<()>;
+    fn make_searcher(&self, modules: LuaModules) -> Result<Searcher>;
+    fn make_searcher_with_env(&self, modules: LuaModules, environment: Table<'a>) -> Result<Searcher>;
 }
 
 impl<'a> ContextExt<'a> for Context<'a> {
@@ -48,9 +50,15 @@ impl<'a> ContextExt<'a> for Context<'a> {
     }
 
     fn add_modules_with_env(&self, modules: LuaModules, environment: Table<'a>) -> Result<()> {
-        let key = self.create_registry_value(environment)?;
         let searchers: Table = self.globals().get::<_, Table>("package")?.get("searchers")?;
-        searchers.set(searchers.len()? + 1, Searcher(modules, key))?;
-        Ok(())
+        searchers.set(searchers.len()? + 1, self.make_searcher_with_env(modules, environment)?)
+    }
+
+    fn make_searcher(&self, modules: LuaModules) -> Result<Searcher> {
+        self.make_searcher_with_env(modules, self.globals())
+    }
+
+    fn make_searcher_with_env(&self, modules: LuaModules, environment: Table<'a>) -> Result<Searcher> {
+        Ok(Searcher(modules, self.create_registry_value(environment)?))
     }
 }
